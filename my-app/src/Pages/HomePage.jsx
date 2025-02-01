@@ -3,6 +3,9 @@ import HeroSection from '../components/HomePage/HeroSection'
 import MedicalServices from '../components/HomePage/MedicalServices'
 import HealthcareHeader from '../components/HomePage/HealthcareHeader'
 import SpecialistCard from '../components/HomePage/SpecialistCard'
+import TeamSection from '../components/HomePage/TeamSection'
+import Footer from '../components/Navbar/Footer'
+
 
 const HomePage = () => {
   return (
@@ -13,6 +16,8 @@ const HomePage = () => {
 <MedicalServices/>
 <HealthcareHeader/>
 <SpecialistCard/>
+<TeamSection/>
+<Footer/>
 
 
 

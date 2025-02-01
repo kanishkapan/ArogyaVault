@@ -23,7 +23,7 @@ const HeroSection = () => {
         {/* Image Placeholder */}
         <div className="lg:w-1/2 flex justify-center mt-10 lg:mt-0">
           <img
-            src="https://via.placeholder.com/600x400"
+            src="./src/assets/image 35.png"
             alt="Healthcare Illustration"
             className="w-full max-w-lg"
           />
