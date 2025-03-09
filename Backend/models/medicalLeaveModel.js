@@ -20,7 +20,14 @@ const MedicalLeaveSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    supportingDocuments: [{ type: String }], // Optional extra files
+    supportingDocuments: [
+      {
+        url: String,
+        publicId: String,
+        format: String,
+        resourceType: String
+      }
+    ],
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Admin approval (if required)
   },
   { timestamps: true }
