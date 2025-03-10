@@ -13,6 +13,7 @@ import Dashboard from "./components/StudentDashboard/Dashboard";
 import SignUp from "./components/Login/SignUp";
 import Certificates from "./components/medicalcertificate/Certificates";
 import Login from "./components/Login/Login";
+import MedicalLeave from "./Pages/MedicalLeave";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -35,6 +36,7 @@ const App = () => {
         <Route path="/telemedicine" element={<Telemedicine />} />
         <Route path="/video-call" element={<VideoCall />} />
         <Route path="/doctor" element={<DoctorsDashboard />} />
+        <Route path="/leave" element={<MedicalLeave />} />
        
       </Routes>
     </Router>
