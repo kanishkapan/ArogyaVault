@@ -6,7 +6,7 @@ import cors from "cors";
 import connectDB from "./db/database.js";
 import userRouter from "./routes/userRoute.js";
 import medicalLeaveRouter from "./routes/medicalLeaveRoute.js";
-//import instructorRouter from "./routes/instructorRoute.js";
+import healthRecordRouter from "./routes/healthRecordRoutes.js";
 //import jobRouter from "./routes/jobRoute.js";
 
 const app = express();
@@ -30,7 +30,7 @@ app.use("/api/user", (req, res, next) => {
   
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/leave", medicalLeaveRouter);
-//app.use("/api/v1/instructor", instructorRouter);
+app.use("/api/v1/health-record", healthRecordRouter);
 //app.use("/api/v1/jobs", jobRouter);
 
 const PORT = process.env.PORT || 3000;
