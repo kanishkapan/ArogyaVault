@@ -34,8 +34,9 @@ export default function SignUp() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-8">
       <div className="bg-white p-12 rounded-xl shadow-lg max-w-4xl w-full flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-1/2 flex justify-center">
-          <img src="/path-to-your-image.png" alt="Sign Up Illustration" className="w-full h-auto max-w-md" />
+        <div className="w-full md:w-1/2 h-full flex-col object-cover flex justify-center">
+        <h1 className="text-6xl flex-row mb-48 text-center">Sign Up</h1>
+          <img src="../src/assets/sign up page.png" alt="Sign Up Illustration" className="w-full h-full object-cover max-w-md" />
         </div>
 
         <div className="w-full md:w-1/2 p-6">
