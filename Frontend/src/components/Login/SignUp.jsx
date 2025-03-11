@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-
+import { api } from "../../axios.config.js";
 export default function SignUp() {
   const [role, setRole] = useState("student");
   const [name, setName] = useState("");
@@ -17,17 +17,30 @@ export default function SignUp() {
     if (role === "doctor") formData.specialization = extra;
 
     try {
-      const response = await fetch("https://your-backend-url.com/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      console.log("Success:", data);
+      const response = await api.post(
+        "user/signup",
+        formData,
+        {withCredentials: true} // If needed for cookies
+      );
+      
+      console.log("Success:", response.data);
+      if(response.status === 201) {
+        window.location.href = "/";
+     } 
     } catch (error) {
-      console.error("Error:", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.log("Error Response Data:", error.response.data);
+        console.log("Error Response Status:", error.response.status);
+        console.log("Error Response Headers:", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log("Error Request:", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error Message:", error.message);
+      }
+      console.log("Error Config:", error.config);
     }
   };
 
@@ -92,7 +105,7 @@ export default function SignUp() {
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               className="w-full p-4 border rounded-lg focus:ring focus:ring-green-300"
-              required
+              
             />
             <select
               value={gender}
