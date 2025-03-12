@@ -16,7 +16,9 @@ const Leave = () => {
     const fetchHealthRecords = async () => {
       try {
         const response = await api.get("/health-record");
-        const sortedRecords = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedRecords = response.data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
         setHealthRecords(sortedRecords);
       } catch (error) {
         console.error("Error fetching health records:", error);
@@ -32,24 +34,36 @@ const Leave = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting form data:", formData);
-
+  
     try {
       const formDataToSend = new FormData();
+      
+      // Append non-file data
       Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
+        if (key !== "supportingDocuments") {
+          formDataToSend.append(key, formData[key]);
+        }
       });
-
+  
+      // ✅ Append multiple files
+      if (formData.supportingDocuments) {
+        Array.from(formData.supportingDocuments).forEach((file) => {
+          formDataToSend.append("supportingDocuments", file);
+        });
+      }
+  
       const response = await api.post("/leave/apply", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
+  
       console.log("Response from server:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 md:p-8">
@@ -60,7 +74,10 @@ const Leave = () => {
         Apply for medical leave with ease!
       </p>
       <div className="bg-white rounded-lg shadow-lg p-6 md:p-10 w-full max-w-lg md:max-w-4xl flex flex-col gap-6">
-        <form className="space-y-4 md:space-y-6 text-lg md:text-xl" onSubmit={handleSubmit}>
+        <form
+          className="space-y-4 md:space-y-6 text-lg md:text-xl"
+          onSubmit={handleSubmit}
+        >
           <input
             type="date"
             name="fromDate"
@@ -88,16 +105,27 @@ const Leave = () => {
             <option value="">Select Health Record</option>
             {healthRecords.map((record) => (
               <option key={record._id} value={record._id}>
-                {record.diagnosis} - {new Date(record.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(",", "")}
+                {record.diagnosis} -{" "}
+                {new Date(record.date)
+                  .toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                  .replace(",", "")}
               </option>
             ))}
           </select>
           <input
             type="file"
             name="supportingDocuments"
+            multiple // ✅ Allows selecting multiple files
             className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
-            onChange={(e) => setFormData({ ...formData, supportingDocuments: e.target.files[0] })}
+            onChange={(e) =>
+              setFormData({ ...formData, supportingDocuments: e.target.files })
+            } // ✅ Stores multiple files
           />
+
           <button
             type="submit"
             className="w-full bg-black text-white py-3 md:py-4 rounded-md text-lg md:text-xl font-semibold hover:bg-gray-800"
