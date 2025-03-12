@@ -34,36 +34,35 @@ const Leave = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting form data:", formData);
-  
+
     try {
       const formDataToSend = new FormData();
-      
+
       // Append non-file data
       Object.keys(formData).forEach((key) => {
         if (key !== "supportingDocuments") {
           formDataToSend.append(key, formData[key]);
         }
       });
-  
+
       // ✅ Append multiple files
       if (formData.supportingDocuments) {
         Array.from(formData.supportingDocuments).forEach((file) => {
           formDataToSend.append("supportingDocuments", file);
         });
       }
-  
+
       const response = await api.post("/leave/apply", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       console.log("Response from server:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 md:p-8">
@@ -78,53 +77,88 @@ const Leave = () => {
           className="space-y-4 md:space-y-6 text-lg md:text-xl"
           onSubmit={handleSubmit}
         >
-          <input
-            type="date"
-            name="fromDate"
-            className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
-            onChange={handleChange}
-          />
-          <input
-            type="date"
-            name="toDate"
-            className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
-            onChange={handleChange}
-          />
-          <textarea
-            name="reason"
-            placeholder="Reason for leave"
-            className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl h-24 md:h-32"
-            onChange={handleChange}
-          ></textarea>
-          <select
-            name="healthRecordId"
-            className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
-            onChange={handleChange}
-            value={formData.healthRecordId}
-          >
-            <option value="">Select Health Record</option>
-            {healthRecords.map((record) => (
-              <option key={record._id} value={record._id}>
-                {record.diagnosis} -{" "}
-                {new Date(record.date)
-                  .toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })
-                  .replace(",", "")}
-              </option>
-            ))}
-          </select>
-          <input
-            type="file"
-            name="supportingDocuments"
-            multiple // ✅ Allows selecting multiple files
-            className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
-            onChange={(e) =>
-              setFormData({ ...formData, supportingDocuments: e.target.files })
-            } // ✅ Stores multiple files
-          />
+          <p className="text-red-500 font-semibold text-sm">* indicates required fields</p>
+
+          <div>
+            <label className="block text-gray-700 font-semibold">
+              From Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="fromDate"
+              className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold">
+              To Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="toDate"
+              className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold">
+              Reason for Leave <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              name="reason"
+              placeholder="Reason for leave"
+              className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl h-24 md:h-32"
+              onChange={handleChange}
+              required
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold">
+              Health Record <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="healthRecordId"
+              className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
+              onChange={handleChange}
+              value={formData.healthRecordId}
+              required
+            >
+              <option value="">Select Health Record</option>
+              {healthRecords.map((record) => (
+                <option key={record._id} value={record._id}>
+                  {record.diagnosis} -{" "}
+                  {new Date(record.date)
+                    .toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })
+                    .replace(",", "")}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold">
+              Supporting Documents (if any)
+            </label>
+            <input
+              type="file"
+              name="supportingDocuments"
+              multiple
+              className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
+              onChange={(e) =>
+                setFormData({ ...formData, supportingDocuments: e.target.files })
+              }
+            />
+          </div>
 
           <button
             type="submit"
