@@ -1,36 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { api } from "../../axios.config.js"; // Import API instance
 
 const AppointmentForm = () => {
   const [formData, setFormData] = useState({
-    mode: "offline",
+    doctorId: "",
     date: "",
-    contact: "",
-    symptoms: "",
+    timeSlot: "",
   });
+
+  const [doctors, setDoctors] = useState([]);
+
+  // Fetch available doctors from backend
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await api.get("/user/doctors"); // Assuming endpoint returns list of doctors
+        setDoctors(response.data);
+      } catch (error) {
+        console.error("Error fetching doctors:", error.response?.data || error.message);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleModeChange = (mode) => {
-    setFormData({ ...formData, mode });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
     try {
-      const response = await fetch("https://your-backend-api.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      console.log("Response from server:", data);
+      const response = await api.post("/appointment", formData);
+      console.log("Response from server:", response.data);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error submitting form:", error.response?.data || error.message);
     }
   };
 
@@ -38,57 +43,42 @@ const AppointmentForm = () => {
     <div className="flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100 p-8">
       {/* Left Section - Form */}
       <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-lg lg:w-1/2">
-        <h2 className="text-4xl font-bold text-green-600 mb-4">Book Your Spot</h2>
-        <p className="text-gray-600 mb-6">Connect with Us: Let's Connect to your Favourite Doctor</p>
-        
-        {/* Mode Selection */}
-        <div className="flex gap-6 mb-6 text-lg">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="mode"
-              value="offline"
-              checked={formData.mode === "offline"}
-              onChange={() => handleModeChange("offline")}
-              className="accent-green-500"
-            />
-            Offline
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="mode"
-              value="online"
-              checked={formData.mode === "online"}
-              onChange={() => handleModeChange("online")}
-              className="accent-green-500"
-            />
-            Online
-          </label>
-        </div>
+        <h2 className="text-4xl font-bold text-green-600 mb-4">Book Your Appointment</h2>
+        <p className="text-gray-600 mb-6">Schedule your appointment easily with our doctors.</p>
 
         {/* Form Fields */}
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* Doctor Selection */}
+          <select
+            name="doctorId"
+            className="w-full border rounded-md p-3 text-gray-700"
+            onChange={handleChange}
+            value={formData.doctorId}
+            required
+          >
+            <option value="">Select Doctor</option>
+            {doctors.map((doctor) => (
+              <option key={doctor._id} value={doctor._id}>
+                {doctor.name}
+              </option>
+            ))}
+          </select>
+
           <input
-            type="text"
+            type="date"
             name="date"
-            placeholder="When are you free?"
             className="w-full border rounded-md p-3 text-gray-700"
             onChange={handleChange}
+            required
           />
           <input
             type="text"
-            name="contact"
-            placeholder="Get a Close One"
+            name="timeSlot"
+            placeholder="Enter Time Slot (e.g., 10:00 AM)"
             className="w-full border rounded-md p-3 text-gray-700"
             onChange={handleChange}
+            required
           />
-          <textarea
-            name="symptoms"
-            placeholder="Symptoms"
-            className="w-full border rounded-md p-3 text-gray-700 h-32"
-            onChange={handleChange}
-          ></textarea>
 
           <button
             type="submit"
