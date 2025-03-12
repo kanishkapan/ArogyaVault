@@ -18,6 +18,8 @@ import MedicalAI from "./components/aifeatures/medicalai";
 import MedicalCertificateGenerator from "./components/aifeatures/MedicalCertificateGenerator";
 import VerificationScreen from "./components/aifeatures/VerificationScreen";
 import Certificate from "./Pages/Certificate";
+import AdminDashboard from "./components/StudentDashboard/Admindashboard";
+import DocDash from "./components/StudentDashboard/DocDash";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -39,10 +41,11 @@ const App = () => {
         <Route path="/patient" element={<PatientForm />} />
         <Route path="/telemedicine" element={<Telemedicine />} />
         <Route path="/video-call" element={<VideoCall />} />
-        <Route path="/doctor" element={<DoctorsDashboard />} />
+        <Route path="/doctor" element={<DocDash />} />
         <Route path="/leave" element={<MedicalLeave />} />
         <Route path="/certificate" element={<Certificate />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
        
       </Routes>
     </Router>
