@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { api } from "../../axios.config.js";
 
 const Leave = () => {
   const [formData, setFormData] = useState({
@@ -6,7 +7,7 @@ const Leave = () => {
     toDate: "",
     reason: "",
     healthRecordId: "",
-    supportingDocuments: "",
+    supportingDocuments: null,
   });
 
   const handleChange = (e) => {
@@ -18,16 +19,18 @@ const Leave = () => {
     console.log("Submitting form data:", formData);
 
     try {
-      const response = await fetch("https://your-backend-api.com/apply-medical-leave", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
       });
 
-      const data = await response.json();
-      console.log("Response from server:", data);
+      const response = await api.post("/leave/apply", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Response from server:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -35,7 +38,9 @@ const Leave = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 md:p-8">
-      <h2 className="text-3xl md:text-5xl font-bold text-green-600 mb-6 md:mb-8 text-center">Medical Leave Form</h2>
+      <h2 className="text-3xl md:text-5xl font-bold text-green-600 mb-6 md:mb-8 text-center">
+        Medical Leave Form
+      </h2>
       <p className="text-gray-600 text-lg md:text-xl mb-4 md:mb-6 text-center">
         Apply for medical leave with ease!
       </p>
