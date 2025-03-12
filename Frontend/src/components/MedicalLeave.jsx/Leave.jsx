@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "../../axios.config.js";
 
 const Leave = () => {
@@ -9,6 +9,21 @@ const Leave = () => {
     healthRecordId: "",
     supportingDocuments: null,
   });
+
+  const [healthRecords, setHealthRecords] = useState([]);
+
+  useEffect(() => {
+    const fetchHealthRecords = async () => {
+      try {
+        const response = await api.get("/health-record");
+        const sortedRecords = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setHealthRecords(sortedRecords);
+      } catch (error) {
+        console.error("Error fetching health records:", error);
+      }
+    };
+    fetchHealthRecords();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,13 +79,19 @@ const Leave = () => {
             className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl h-24 md:h-32"
             onChange={handleChange}
           ></textarea>
-          <input
-            type="text"
+          <select
             name="healthRecordId"
-            placeholder="Health Record ID"
             className="w-full border rounded-md p-3 md:p-4 text-gray-700 text-lg md:text-xl"
             onChange={handleChange}
-          />
+            value={formData.healthRecordId}
+          >
+            <option value="">Select Health Record</option>
+            {healthRecords.map((record) => (
+              <option key={record._id} value={record._id}>
+                {record.diagnosis} - {new Date(record.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(",", "")}
+              </option>
+            ))}
+          </select>
           <input
             type="file"
             name="supportingDocuments"
