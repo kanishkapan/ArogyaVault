@@ -19,7 +19,7 @@ const DoctorInsightsChat = () => {
       sender: 'user'
     };
     
-    setMessages(prev => [...prev, newUserMessage]);
+    setMessages((prev) => [...prev, newUserMessage]);
     setLoading(true);
     
     try {
@@ -45,7 +45,7 @@ const DoctorInsightsChat = () => {
         sender: 'bot'
       };
       
-      setMessages(prev => [...prev, newBotMessage]);
+      setMessages((prev) => [...prev, newBotMessage]);
       setQuestion('');
     } catch (error) {
       const errorMessage = {
@@ -53,23 +53,23 @@ const DoctorInsightsChat = () => {
         text: 'Error connecting to the server. Please try again.',
         sender: 'bot'
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-green-50">
       {/* Header */}
-      <div className="bg-blue-600 text-white p-4 shadow-md">
-        <h1 className="text-xl font-bold">Doctor Insights</h1>
-      </div>
+      <header className="bg-green-600 text-white px-4 py-3 shadow-md sm:px-6 sm:py-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-center">Doctor Insights</h1>
+      </header>
       
       {/* Doctor ID Input */}
-      <div className="bg-white p-4 shadow-sm">
-        <div className="max-w-2xl mx-auto">
-          <label htmlFor="doctorId" className="block text-sm font-medium text-gray-700 mb-1">
+      <section className="bg-white px-4 py-3 shadow-sm border-b sm:px-6">
+        <div className="mx-auto max-w-full sm:max-w-2xl">
+          <label htmlFor="doctorId" className="block text-sm font-medium text-green-700 mb-1">
             Doctor ID
           </label>
           <input
@@ -77,30 +77,30 @@ const DoctorInsightsChat = () => {
             id="doctorId"
             value={doctorId}
             onChange={(e) => setDoctorId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
             placeholder="Enter your doctor ID"
           />
         </div>
-      </div>
+      </section>
       
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="max-w-2xl mx-auto space-y-4">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="mx-auto space-y-4 max-w-full sm:max-w-2xl">
           {messages.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-green-500 py-8">
               Ask a question to get started
             </div>
           ) : (
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex animate-fadeIn ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs md:max-w-md rounded-lg px-4 py-2 ${
+                  className={`rounded-lg px-4 py-2 shadow-md transition transform hover:scale-105 max-w-[90%] sm:max-w-md ${
                     message.sender === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-800'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-white text-green-800 border border-green-200'
                   }`}
                 >
                   {message.text}
@@ -109,39 +109,45 @@ const DoctorInsightsChat = () => {
             ))
           )}
           {loading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-200 text-gray-800 rounded-lg px-4 py-2 max-w-xs md:max-w-md">
+            <div className="flex justify-start animate-fadeIn">
+              <div className="bg-white text-green-800 rounded-lg px-4 py-2 shadow-md max-w-[90%] sm:max-w-md">
                 <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                  <div
+                    className="w-2 h-2 bg-green-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-green-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.4s' }}
+                  ></div>
                 </div>
               </div>
             </div>
           )}
         </div>
-      </div>
+      </main>
       
       {/* Question Input */}
-      <div className="bg-white p-4 border-t">
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto flex space-x-2">
+      <footer className="bg-white px-4 py-3 border-t sm:px-6">
+        <form onSubmit={handleSubmit} className="mx-auto flex space-x-2 max-w-full sm:max-w-2xl">
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
             placeholder="Ask a question..."
             disabled={loading}
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-400"
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300 disabled:bg-green-400"
             disabled={loading || !doctorId.trim() || !question.trim()}
           >
             {loading ? 'Sending...' : 'Send'}
           </button>
         </form>
-      </div>
+      </footer>
     </div>
   );
 };

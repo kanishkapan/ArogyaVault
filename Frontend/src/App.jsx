@@ -55,9 +55,9 @@ const App = () => {
         <Route path="/certificate" element={<Certificate />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/healthchat" element={<Healthchat />} />
-        <Route path="/predict" element={<Predictionchat />} />
-        <Route path="/leavechat" element={<Leavechat />} />
+        <Route path="/health-record-concern" element={<Healthchat />} />
+        <Route path="/ai-diagnosis" element={<Predictionchat />} />
+        <Route path="/leave-concern" element={<Leavechat />} />
         <Route path="/recordform" element={<HealthRecordForm />} />
         <Route path="/insights" element={<DoctorInsightsChat />} />
 
