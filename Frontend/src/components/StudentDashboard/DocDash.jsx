@@ -4,7 +4,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie } fr
 import { Bell, Settings, Search, Eye, Calendar, FileText, User, Check, X, Video, Clock, Bot, MessageSquare, Activity, AlertCircle, FileCheck } from 'lucide-react';
 import { api } from '../../axios.config.js';
 
-
 const DocDash = () => {
   // Sample data for student certificates
   const [certificates] = useState([
@@ -29,12 +28,10 @@ const DocDash = () => {
     { id: 'PRE004', studentName: 'Sarah Miller', studentId: 'STU10091', gender: 'Female', medication: 'Cetirizine 10mg', dosage: 'Once daily', issuedDate: '2025-03-11', notes: 'Take in the evening', status: 'Rejected' }
   ]);
 
-  // Sample data for video call appointments
-  const [videoAppointments] = useState([
-    { id: 'VID001', patientName: 'John Smith', studentId: 'STU10045', appointmentDate: '2025-03-13', timeFrom: '03:00 PM', timeTo: '03:30 PM', status: 'Scheduled' },
-    { id: 'VID002', patientName: 'Emma Johnson', studentId: 'STU10078', appointmentDate: '2025-03-13', timeFrom: '04:00 PM', timeTo: '04:30 PM', status: 'In Progress' },
-    { id: 'VID003', patientName: 'Michael Wang', studentId: 'STU10023', appointmentDate: '2025-03-14', timeFrom: '01:00 PM', timeTo: '01:30 PM', status: 'Scheduled' }
-  ]);
+  // Remove static sample data for video call appointments and use dynamic state instead
+  const [videoAppointments, setVideoAppointments] = useState([]);
+  const [loadingVideo, setLoadingVideo] = useState(true);
+  const [videoError, setVideoError] = useState(null);
 
   // Statistics for dashboard charts
   const healthIssuesData = [
@@ -56,6 +53,15 @@ const DocDash = () => {
 
   // State for active tab
   const [activeTab, setActiveTab] = useState('certificate');
+
+  // Helper function to format date in DD/month name/yyyy format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   // Fetch appointments whenever the status or date filter changes
   useEffect(() => {
@@ -120,6 +126,35 @@ const DocDash = () => {
   // Function to view appointment details (for example, opening a modal)
   const viewAppointmentDetails = (appointment) => {
     console.log('View appointment details:', appointment);
+  };
+
+  // New: Fetch video appointments from the API when the Video tab is active
+  useEffect(() => {
+    if (activeTab === 'video') {
+      fetchVideoAppointments();
+    }
+  }, [activeTab]);
+
+  const fetchVideoAppointments = async () => {
+    try {
+      setLoadingVideo(true);
+      const response = await api.get('/doctor/appointment', { params: { status: 'confirmed' } });
+      const formattedVideoAppointments = response.data.map(app => ({
+        id: app._id,
+        patientName: app.studentId?.name || 'Unknown Patient',
+        studentId: app.studentId?._id || 'N/A',
+        appointmentDate: formatDate(app.slotDateTime),
+        time: new Date(app.slotDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+        rawData: app
+      }));
+      setVideoAppointments(formattedVideoAppointments);
+    } catch (error) {
+      console.error('Error fetching video appointments:', error);
+      setVideoError('Failed to load video appointments. Please try again later.');
+    } finally {
+      setLoadingVideo(false);
+    }
   };
 
   return (
@@ -531,32 +566,54 @@ const DocDash = () => {
               
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4">Today's Video Appointments</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {videoAppointments.map(app => (
-                    <div 
-                      key={app.id} 
-                      className={`p-4 rounded-lg border ${
-                        app.status === 'completed' ? 'border-green-500 bg-green-100' :
-                        app.status === 'pending' ? 'border-yellow-500 bg-yellow-100' :
-                        'border-red-500 bg-red-100'
-                      }`}
-                    >
-                      <h4 className="font-semibold">{app.patientName}</h4>
-                      <p className="text-sm text-gray-600">{app.time}</p>
-                      <p className={`text-sm font-medium ${
-                        app.status === 'completed' ? 'text-green-700' :
-                        app.status === 'pending' ? 'text-yellow-700' :
-                        'text-red-700'
-                      }`}>
-                        {app.status}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                {loadingVideo ? (
+                  <div className="flex justify-center items-center py-10">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500"></div>
+                  </div>
+                ) : videoError ? (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    {videoError}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4">
+                    {videoAppointments.length === 0 ? (
+                      <div className="col-span-3 text-center text-gray-500">No video appointments found</div>
+                    ) : (
+                      videoAppointments.map(app => (
+                        <div 
+                          key={app.id} 
+                          className={`p-4 rounded-lg border ${
+                            app.status === 'Confirmed' ? 'border-green-500 bg-green-100' :
+                            app.status === 'Pending' ? 'border-yellow-500 bg-yellow-100' :
+                            'border-red-500 bg-red-100'
+                          }`}
+                        >
+                          <h4 className="font-semibold">{app.patientName}</h4>
+                          <p className="text-sm text-gray-600">{app.appointmentDate}</p>
+                          <p className="text-sm text-gray-600">{app.time}</p>
+                          <p className={`text-sm font-medium ${
+                            app.status === 'Confirmed' ? 'text-green-700' :
+                            app.status === 'Pending' ? 'text-yellow-700' :
+                            'text-red-700'
+                          }`}>
+                            {app.status}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
+          {/* Analytics Tab */}
+          {activeTab === 'analytics' && (
+            <div>
+              {/* Analytics content goes here */}
+              <h2 className="text-xl font-semibold">Analytics</h2>
+            </div>
+          )}
         </div>
       </div>
     </div>
