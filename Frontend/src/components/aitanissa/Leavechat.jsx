@@ -16,13 +16,13 @@ const Leavechat = () => {
 
     try {
       // Make API call to the leave-related API
-      const response = await axios.post('http://localhost:5000/leaverelated', {
+      const res = await axios.post('http://localhost:5000/leaverelated', {
         studentId: studentId,
         question: question
       });
 
       // Store the response
-      setResponse(response.data);
+      setResponse(res.data);
       
       // Add to chat history
       setChatHistory([
@@ -34,7 +34,7 @@ const Leavechat = () => {
         },
         { 
           type: 'ai', 
-          content: response.data.answer
+          content: res.data.answer
         }
       ]);
 
@@ -49,12 +49,12 @@ const Leavechat = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-green-50">
       {/* Header */}
-      <header className="bg-blue-600 text-white p-4 shadow-md">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold">Leave Management System</h1>
-          <p className="text-sm text-blue-100">Ask questions about your leave status</p>
+      <header className="bg-gradient-to-r from-green-600 to-green-500 text-white p-4 shadow-md">
+        <div className="max-w-6xl mx-auto px-4">
+          <h1 className="text-2xl md:text-3xl font-bold">Leave Management System</h1>
+          <p className="text-sm md:text-base text-green-100">Ask questions about your leave status</p>
         </div>
       </header>
 
@@ -62,7 +62,7 @@ const Leavechat = () => {
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden mr-0 md:mr-4 mb-4 md:mb-0">
           {/* Chat History */}
-          <div className="flex-1 bg-white rounded-lg shadow-md p-4 overflow-y-auto mb-4">
+          <div className="flex-1 bg-white rounded-lg shadow-md p-4 overflow-y-auto mb-4 border border-green-200">
             {chatHistory.length === 0 ? (
               <div className="text-center text-gray-500 my-8">
                 <div className="mb-3">
@@ -80,18 +80,18 @@ const Leavechat = () => {
                     className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div 
-                      className={`max-w-3/4 rounded-lg p-3 ${
+                      className={`max-w-full md:max-w-3/4 rounded-lg p-3 ${
                         message.type === 'user' 
-                          ? 'bg-blue-500 text-white' 
+                          ? 'bg-green-500 text-white' 
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       {message.type === 'user' && (
-                        <div className="text-xs text-blue-200 mb-1">
+                        <div className="text-xs text-green-200 mb-1">
                           Student ID: {message.studentId}
                         </div>
                       )}
-                      <div className="whitespace-pre-wrap">{message.content}</div>
+                      <div className="whitespace-pre-wrap break-words">{message.content}</div>
                     </div>
                   </div>
                 ))}
@@ -100,15 +100,15 @@ const Leavechat = () => {
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4">
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4 border border-green-200">
             <div className="flex flex-col gap-3">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                   placeholder="Student ID"
-                  className="flex-none w-32 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full sm:w-32 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
                 <input
@@ -116,16 +116,16 @@ const Leavechat = () => {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="Ask about your leave status..."
-                  className="flex-1 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:bg-blue-400"
+                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md disabled:bg-green-400"
                 >
                   {loading ? (
-                    <span className="flex items-center">
+                    <span className="flex items-center justify-center">
                       <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

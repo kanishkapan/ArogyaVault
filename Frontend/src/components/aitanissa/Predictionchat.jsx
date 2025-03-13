@@ -9,6 +9,31 @@ const Predictionchat = () => {
   const [error, setError] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
+  // Helper function to replace **text** with <strong>text</strong>
+  const formatText = (text) => {
+    if (!text) return null;
+    const regex = /\*\*(.*?)\*\*/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = regex.exec(text)) !== null) {
+      // Push text before the bolded text
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+      // Push the bold text without the asterisks
+      parts.push(<strong key={lastIndex}>{match[1]}</strong>);
+      lastIndex = regex.lastIndex;
+    }
+    
+    // Push the remaining text after the last match
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+    return parts;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -22,12 +47,12 @@ const Predictionchat = () => {
         .filter(symptom => symptom !== '');
 
       // Make API call
-      const response = await axios.post('http://localhost:5000/disease_prediction', {
+      const res = await axios.post('http://localhost:5000/disease_prediction', {
         symptoms: symptomsArray
       });
 
       // Format and store the response
-      const formattedResponse = response.data;
+      const formattedResponse = res.data;
       setResponse(formattedResponse);
       
       // Add to chat history
@@ -206,7 +231,9 @@ const Predictionchat = () => {
           
           {response ? (
             <div className="bg-green-50 p-5 rounded-xl border border-green-100">
-              <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans leading-relaxed">{response.prediction}</pre>
+              <div className="whitespace-pre-wrap text-sm text-gray-800 font-sans leading-relaxed">
+                {formatText(response.prediction)}
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-64 text-center p-4">
@@ -229,8 +256,9 @@ const Predictionchat = () => {
             </div>
           )}
        </div>
-       </div>
-       </div>
-  )}
+      </div>
+    </div>
+  );
+};
 
-  export default Predictionchat;
+export default Predictionchat;
