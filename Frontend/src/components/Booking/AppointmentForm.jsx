@@ -234,11 +234,11 @@ const AppointmentForm = () => {
       </div>
       
       {/* Right Section - Image */}
-      <div className="hidden lg:flex items-center justify-center w-full lg:w-1/2 p-6">
+      <div className="hidden lg:flex items-center h-full justify-center w-full lg:w-1/2">
         <img
-          src="/path-to-your-image.png" // Replace with actual image path
+        src="./src/assets/certficate page.png" // Replace with actual image path
           alt="Doctor Consultation"
-          className="w-full max-w-md rounded-lg shadow-lg"
+          className="w-full max-w-md rounded-lg "
         />
       </div>
     </div>
