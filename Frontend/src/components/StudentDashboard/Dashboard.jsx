@@ -83,21 +83,21 @@ const Dashboard = () => {
 
         {/* Action Buttons & History */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          {[
-            { title: "Health Records", action: "Upload Health Record", color: "bg-blue-600", icon: Upload, history: "Last uploaded: Blood Test Report - 10th March 2025" },
-            { title: "Leave Applications", action: "Apply for Leave", color: "bg-green-600", icon: FileText, history: "Last leave applied: 5th March 2025 (Medical Leave)" },
-            { title: "Appointments", action: "Book Appointment", color: "bg-purple-600", icon: Calendar, history: "Next appointment: 15th March 2025 - Dr. Smith (Dermatology)" },
-            { title: "AI Chatbot", action: "AI Chatbot", color: "bg-yellow-500", icon: MessageCircle, history: "Last query: 'Best home remedies for fever?'" },
-          ].map((item, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4 text-gray-700">{item.title}</h2>
-              <button className={`flex items-center justify-center ${item.color} text-white p-4 rounded-xl shadow-md w-full mb-4 text-lg font-semibold`}>
-                <item.icon className="mr-2" /> {item.action}
-              </button>
-              <p className="text-gray-800 text-lg font-medium bg-gray-100 p-4 rounded-lg shadow-sm">{item.history}</p>
-            </div>
-          ))}
-        </div>
+  {[
+    { title: "Health Records", action: "Upload Health Record", color: "bg-blue-600", icon: Upload, history: "Last uploaded: Blood Test Report - 10th March 2025", route: "/recordform" },
+    { title: "Leave Applications", action: "Apply for Leave", color: "bg-green-600", icon: FileText, history: "Last leave applied: 5th March 2025 (Medical Leave)", route: "/leave" },
+    { title: "Appointments", action: "Book Appointment", color: "bg-purple-600", icon: Calendar, history: "Next appointment: 15th March 2025 - Dr. Smith (Dermatology)", route: "/appointment" },
+    { title: "AI Chatbot", action: "AI Chatbot", color: "bg-yellow-500", icon: MessageCircle, history: "Last query: 'Best home remedies for fever?'", route: "/ai-bot" },
+  ].map((item, index) => (
+    <div key={index} className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+      <h2 className="text-xl font-semibold mb-4 text-gray-700">{item.title}</h2>
+      <Link to={item.route} className={`flex items-center justify-center ${item.color} text-white p-4 rounded-xl shadow-md w-full mb-4 text-lg font-semibold`}>
+        <item.icon className="mr-2" /> {item.action}
+      </Link>
+      <p className="text-gray-800 text-lg font-medium bg-gray-100 p-4 rounded-lg shadow-sm">{item.history}</p>
+    </div>
+  ))}
+</div>
 
         {/* Health Records Section */}
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-8">
