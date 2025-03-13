@@ -26,6 +26,7 @@ import Healthchat from "./components/aitanissa/healthchat";
 import Predictionchat from "./components/aitanissa/Predictionchat";
 import Leavechat from "./components/aitanissa/Leavechat";
 import HealthRecordForm from "./components/Healthrecordform/HealthRecordForm";
+import DoctorInsightsChat from "./components/aitanissa/DoctorInsightsChat";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -58,6 +59,8 @@ const App = () => {
         <Route path="/predict" element={<Predictionchat />} />
         <Route path="/leavechat" element={<Leavechat />} />
         <Route path="/recordform" element={<HealthRecordForm />} />
+        <Route path="/insights" element={<DoctorInsightsChat />} />
+
        
       </Routes>
     </Router>
