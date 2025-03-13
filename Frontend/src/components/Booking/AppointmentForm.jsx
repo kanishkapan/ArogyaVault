@@ -142,10 +142,11 @@ const AppointmentForm = () => {
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100 p-8">
       {/* Left Section - Form */}
-      <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-lg lg:w-1/2">
-        <h2 className="text-4xl font-bold text-green-600 mb-4">Book Your Appointment</h2>
-        <p className="text-gray-600 mb-6">Schedule your appointment easily with our doctors.</p>
-        
+      <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-lg lg:w-1/2 flex flex-col justify-center h-[90vh]">
+      <div className="mb-24">
+        <h2 className="text-4xl font-bold text-green-600  ">Book Your Appointment</h2>
+        <p className="text-gray-600 mt-6mb-24 ">Schedule your appointment easily with our doctors.</p>
+        </div>
         {/* Success Message */}
         {success && (
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
@@ -161,10 +162,10 @@ const AppointmentForm = () => {
         )}
         
         {/* Form Fields */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-20" onSubmit={handleSubmit}>
           {/* Doctor Selection */}
           <div>
-            <label className="block text-gray-700 mb-2">Select Doctor</label>
+            <label className="block text-gray-700  ">Select Doctor</label>
             <select
               name="doctorId"
               className="w-full border rounded-md p-3 text-gray-700"
@@ -234,9 +235,9 @@ const AppointmentForm = () => {
       </div>
       
       {/* Right Section - Image */}
-      <div className="hidden lg:flex items-center h-full justify-center w-full lg:w-1/2">
+      <div className="hidden lg:flex h-full w-full lg:w-1/2">
         <img
-        src="./src/assets/certficate page.png" // Replace with actual image path
+        src="./src/assets/form design flip.png" // Replace with actual image path
           alt="Doctor Consultation"
           className="w-full max-w-md rounded-lg "
         />
