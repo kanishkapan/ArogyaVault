@@ -46,8 +46,9 @@ const Navbar = React.memo(() => {
     try {
       await api.post("user/logout"); // Call logout endpoint
       logout(); // Update local state
-      Setuser(null);
+      
       navigate("/"); // Navigate to home after logout
+      Setuser(null);
     } catch (error) {
       console.error("Error logging out:", error);
     }
