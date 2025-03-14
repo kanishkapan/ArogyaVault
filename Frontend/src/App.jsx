@@ -60,7 +60,7 @@ const App = () => {
         <Route path="/ai-diagnosis" element={<Predictionchat />} />
         <Route path="/leave-concern" element={<Leavechat />} />
         <Route path="/recordform" element={<HealthRecordForm />} />
-        <Route path="/insights" element={<DoctorInsightsChat />} />
+        <Route path="/ai-assistant" element={<DoctorInsightsChat />} />
 
        
       </Routes>
