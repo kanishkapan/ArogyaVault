@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie } from 'recharts';
 import { Bell, Settings, Search, Eye, Calendar, FileText, User, Check, X, Video, Clock, Bot, MessageSquare, Activity, AlertCircle, FileCheck } from 'lucide-react';
 import { api } from '../../axios.config.js';
+import { useNavigate } from "react-router-dom";
 
 const DocDash = () => {
   // Sample data for student certificates
@@ -12,6 +13,7 @@ const DocDash = () => {
     { id: 'CERT003', studentName: 'Michael Wang', studentId: 'STU10023', gender: 'Male', certificateType: 'Mental Health Clearance', issueDate: '2025-03-05', expiryDate: '2025-09-05', documentLink: 'mh_clearance.pdf', status: 'Pending' },
     { id: 'CERT004', studentName: 'Sarah Miller', studentId: 'STU10091', gender: 'Female', certificateType: 'Physical Examination', issueDate: '2025-02-28', expiryDate: '2026-02-28', documentLink: 'physical_exam.pdf', status: 'Rejected' }
   ]);
+  const navigate = useNavigate();
 
   // Replace static appointment sample data with dynamic state
   const [appointments, setAppointments] = useState([]);
@@ -180,6 +182,14 @@ const DocDash = () => {
               <span className="text-lg font-medium">{item.name}</span>
             </Link>
           ))}
+            <div className="flex items-center justify-center p-6 bg-white rounded-2xl shadow-md border border-green-500">
+      <button
+        onClick={() => navigate("/slots")}
+        className="px-6 py-3 text-lg font-semibold text-white bg-green-500 rounded-lg transition-all duration-300 ease-in-out hover:bg-green-600 hover:shadow-lg"
+      >
+        Select Time Slot
+      </button>
+    </div>
         </nav>
 
         {/* AI Bot Section */}
