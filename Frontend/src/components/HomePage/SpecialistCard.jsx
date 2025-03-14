@@ -7,10 +7,12 @@ export default function SpecialistCard() {
   const [openIndex, setOpenIndex] = useState(null);
 
   const specialists = [
-    { id: 1, title: "NEUROLOGIST" },
-    { id: 2, title: "NEUROLOGIST" },
-    { id: 3, title: "NEUROLOGIST" },
-    { id: 4, title: "NEUROLOGIST" },
+    { id: 1, title: "PRESCRIPTION GENERATOR" },
+    { id: 2, title: "APPOINTMENT BOOKING " },
+    { id: 3, title: "AI BASED DIAGNOSIS  " },
+    { id: 4, title: "APPLY FOR LEAVE " },
+    { id: 5, title: "MEDICAL CERTFICATE  " },
+    { id: 4, title: "TALK WITH AI  " },
   ];
 
   return (
