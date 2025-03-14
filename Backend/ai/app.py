@@ -304,7 +304,7 @@ def doctor_insights():
     try:
         data = request.json
         user_question = data.get("question")
-        
+
         # Get doctor ID from the JWT token and convert to ObjectId
         doctor_id = g.user.get('_id')
         print(f"Using doctor ID from token: {doctor_id}")
@@ -312,13 +312,18 @@ def doctor_insights():
         if not user_question:
             return jsonify({"error": "Question is required"}), 400
 
-        # Fetch doctor details
-        doctor = users_collection.find_one({"_id": ObjectId(doctor_id)})
+        # Fetch doctor details including available slots
+        doctor = users_collection.find_one({"_id": ObjectId(doctor_id)}, {"name": 1, "availableSlots": 1})
         if not doctor:
             return jsonify({"error": "Doctor not found"}), 404
-        doctor_name = get_user_name(doctor_id)
+        
+        doctor_name = doctor.get("name", "Unknown Doctor")
+        available_slots = doctor.get("availableSlots", [])
 
-        # Fetch doctor's upcoming appointments - convert string ID to ObjectId
+        # Extract only non-booked slots
+        free_slots = [slot["dateTime"] for slot in available_slots if not slot.get("isBooked", True)]
+
+        # Fetch doctor's upcoming appointments
         appointments = list(appointments_collection.find({"doctorId": ObjectId(doctor_id)}))
         enriched_appointments = []
         for appointment in appointments:
@@ -343,9 +348,12 @@ def doctor_insights():
                 "Date": record.get("createdAt", "Unknown")
             })
 
-        # AI Prompt
+        # AI Prompt (Ensuring Available Slots are Passed)
         gemini_prompt = f"""
         You are assisting Dr. {doctor_name} with patient records.
+
+        Available Appointment Slots:
+        {free_slots}
 
         Your Upcoming Appointments:
         {enriched_appointments}
@@ -364,6 +372,7 @@ def doctor_insights():
 
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
   
 
