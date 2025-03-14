@@ -13,9 +13,7 @@ const HeroSection = () => {
           <p className="text-gray-700 text-lg lg:text-xl mb-8 leading-relaxed lg:leading-loose">
           Your Health, Your Vault – Instantly access, manage, and secure student medical records with ease.
           </p>
-          <button className="bg-green-300 text-green-900 px-6 py-3 rounded-lg font-bold hover:bg-green-400 transition duration-300">
-            Start Your Journey
-          </button>
+          
         </div>
 
         {/* Image Placeholder */}

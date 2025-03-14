@@ -13,9 +13,7 @@ const Header = () => {
           <p className="text-gray-700 text-lg lg:text-xl mb-8 leading-relaxed lg:leading-loose">
           Schedule doctor appointments in seconds – hassle-free booking, instant confirmations, and seamless healthcare access with Arogya Vault!
           </p>
-          <button className="bg-green-300 text-green-900 px-6 py-3 rounded-lg font-bold hover:bg-green-400 transition duration-300">
-            Start Your Journey
-          </button>
+         
         </div>
 
         {/* Image Placeholder */}

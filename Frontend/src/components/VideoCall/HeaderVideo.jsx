@@ -13,9 +13,7 @@ const HeaderVideo = () => {
           <p className="text-gray-700 text-lg lg:text-xl mb-8 leading-relaxed lg:leading-loose">
           Connect with healthcare professionals in real-time – secure, high-quality video calls for instant medical advice and support, right from Arogya Vault!
           </p>
-          <button className="bg-green-300 text-green-900 px-6 py-3 rounded-lg font-bold hover:bg-green-400 transition duration-300">
-            Start Your Journey
-          </button>
+         
         </div>
 
         {/* Image Placeholder */}
