@@ -63,7 +63,7 @@ const App = () => {
         <Route path="/recordform" element={<HealthRecordForm />} />
         <Route path="/ai-assistant" element={<DoctorInsightsChat />} />
         <Route path="/slots" element={<DoctorTimeSlotSelector />} />
-        <Route path="/prescription" element={<PrescriptionGenerator />} />
+        <Route path="/prescriptions" element={<PrescriptionGenerator />} />
 
        
       </Routes>
