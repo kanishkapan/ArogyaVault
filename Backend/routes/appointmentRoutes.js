@@ -1,17 +1,13 @@
 import express from "express";
 import {
   bookAppointment,
-  getStudentAppointments,
-  getDoctorAppointments,
-  updateAppointmentStatus
+  getStudentAppointments
 } from "../controllers/appointmentController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
-const router = express.Router();
+export const router = express.Router();
 
 router.post("/", authMiddleware(["student"]), bookAppointment);
-router.get("/student/:studentId", authMiddleware(["student"]), getStudentAppointments);
-router.get("/doctor/:doctorId", authMiddleware(["doctor"]), getDoctorAppointments);
-router.patch("/:id/status", authMiddleware(["doctor"]), updateAppointmentStatus);
+router.get("/student", authMiddleware(["student"]), getStudentAppointments);
 
 export default router;
