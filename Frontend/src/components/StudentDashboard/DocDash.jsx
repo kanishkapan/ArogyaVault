@@ -50,6 +50,8 @@ const DocDash = () => {
     { month: 'May', checkups: 25, emergencies: 6 },
     { month: 'Jun', checkups: 32, emergencies: 9 }
   ];
+  const SelectTimeSlotButton = () => {
+    const router = useRouter();
 
   // State for active tab
   const [activeTab, setActiveTab] = useState('certificate');
@@ -180,6 +182,7 @@ const DocDash = () => {
               <span className="text-lg font-medium">{item.name}</span>
             </Link>
           ))}
+          
         </nav>
 
         {/* AI Bot Section */}
@@ -612,5 +615,6 @@ const DocDash = () => {
     </div>
   );
 };
+}
 
 export default DocDash;
