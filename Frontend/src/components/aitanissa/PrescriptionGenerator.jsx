@@ -3,7 +3,6 @@ import { FileText, CheckCircle, Plus, RefreshCw } from "lucide-react";
 import jsPDF from "jspdf";
 import { api } from "../../axios.config.js";
 
-// Main Prescription Generator Component
 const PrescriptionGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
@@ -29,9 +28,9 @@ const PrescriptionGenerator = () => {
     try {
       const response = await api.get("/doctor/appointment?status=confirmed");
       setAppointments(response.data);
-      setLoadingAppointments(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);
+    } finally {
       setLoadingAppointments(false);
     }
   };
@@ -56,20 +55,14 @@ const PrescriptionGenerator = () => {
   // Handle form changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   // Handle medication changes
   const handleMedicationChange = (index, field, value) => {
     const updatedMedications = [...formData.medications];
     updatedMedications[index][field] = value;
-    setFormData({
-      ...formData,
-      medications: updatedMedications,
-    });
+    setFormData({ ...formData, medications: updatedMedications });
   };
 
   // Add new medication field
@@ -87,17 +80,13 @@ const PrescriptionGenerator = () => {
   const removeMedication = (index) => {
     const updatedMedications = [...formData.medications];
     updatedMedications.splice(index, 1);
-    setFormData({
-      ...formData,
-      medications: updatedMedications,
-    });
+    setFormData({ ...formData, medications: updatedMedications });
   };
 
-  // Generate prescription using Gemini API
+  // Generate prescription using a simulated API call
   const generatePrescription = async () => {
     setIsLoading(true);
     try {
-      // This is a placeholder for the Gemini API call
       const prompt = `
         Create a formal medical prescription with the following details:
         Doctor: ${formData.doctorName}
@@ -115,7 +104,7 @@ const PrescriptionGenerator = () => {
         Format this as a formal prescription including dosage instructions, warnings, and follow-up recommendations.
       `;
 
-      // Simulating API response for demonstration
+      // Simulate API response delay for demonstration purposes
       setTimeout(() => {
         const sampleResponse = `
         MEDICAL PRESCRIPTION
@@ -132,8 +121,7 @@ const PrescriptionGenerator = () => {
           .map(
             (med, idx) =>
               `${idx + 1}. ${med.medicineName} - ${med.dose}
-             Take ${med.frequency} for ${med.duration}
-          `
+             Take ${med.frequency} for ${med.duration}`
           )
           .join("\n")}
         
@@ -146,7 +134,6 @@ const PrescriptionGenerator = () => {
         
         ArogyaVault Verified
         `;
-
         setGeneratedPrescription(sampleResponse);
         setIsLoading(false);
       }, 1500);
@@ -156,7 +143,7 @@ const PrescriptionGenerator = () => {
     }
   };
 
-  // Create PDF, treat it as a file, and send it to the backend
+  // Create PDF and send it to the backend
   const uploadPDFAndSendToBackend = async () => {
     if (!selectedAppointment) {
       alert("Please select an appointment first.");
@@ -195,11 +182,9 @@ const PrescriptionGenerator = () => {
 
     try {
       setIsLoading(true);
-      // Send FormData to backend; backend will handle Cloudinary upload
+      // Send FormData to backend; backend will handle file upload
       await api.patch("/doctor/prescription", formDataPayload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Prescription uploaded successfully!");
     } catch (error) {
@@ -244,7 +229,6 @@ const PrescriptionGenerator = () => {
                     Refresh
                   </button>
                 </div>
-
                 <select
                   value={selectedAppointment}
                   onChange={handleAppointmentSelect}
@@ -364,11 +348,7 @@ const PrescriptionGenerator = () => {
                             type="text"
                             value={med.dose}
                             onChange={(e) =>
-                              handleMedicationChange(
-                                index,
-                                "dose",
-                                e.target.value
-                              )
+                              handleMedicationChange(index, "dose", e.target.value)
                             }
                             className="mt-1 block w-full rounded-md border-green-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 text-sm"
                             placeholder="e.g. 500mg"
@@ -479,17 +459,17 @@ const PrescriptionGenerator = () => {
 
             {/* Output Preview */}
             <div className="bg-white p-4 border border-green-200 rounded-lg h-full">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-green-700">
                   Prescription Preview
                 </h2>
                 {generatedPrescription && (
                   <button
                     onClick={uploadPDFAndSendToBackend}
-                    className="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-md text-sm flex items-center"
+                    className="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-md text-sm flex items-center mt-2 sm:mt-0"
                   >
                     <FileText className="w-4 h-4 mr-1" />
-                    Upload & Save Prescription
+                    Upload &amp; Save Prescription
                   </button>
                 )}
               </div>
