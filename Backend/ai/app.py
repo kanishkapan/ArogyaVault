@@ -11,7 +11,7 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://tannisa:YXmXxB8C19yRxAFr@arogya-vault.3bg8o.mongodb.net/arogya-vault"
@@ -304,7 +304,7 @@ def doctor_insights():
     try:
         data = request.json
         user_question = data.get("question")
-        
+
         # Get doctor ID from the JWT token and convert to ObjectId
         doctor_id = g.user.get('_id')
         print(f"Using doctor ID from token: {doctor_id}")
@@ -312,13 +312,100 @@ def doctor_insights():
         if not user_question:
             return jsonify({"error": "Question is required"}), 400
 
-        # Fetch doctor details
-        doctor = users_collection.find_one({"_id": ObjectId(doctor_id)})
+        # Fetch doctor details including available slots
+        doctor = users_collection.find_one({"_id": ObjectId(doctor_id)}, {"name": 1, "availableSlots": 1})
         if not doctor:
             return jsonify({"error": "Doctor not found"}), 404
-        doctor_name = get_user_name(doctor_id)
+        
+        doctor_name = doctor.get("name", "Unknown Doctor")
+        available_slots = doctor.get("availableSlots", [])
 
-        # Fetch doctor's upcoming appointments - convert string ID to ObjectId
+        # Extract only non-booked slots
+        free_slots = [slot["dateTime"] for slot in available_slots if not slot.get("isBooked", True)]
+
+        # Fetch doctor's upcoming appointments
+        appointments = list(appointments_collection.find({"doctorId": ObjectId(doctor_id)}))
+        enriched_appointments = []
+        for appointment in appointments:
+            student_name = get_user_name(appointment["studentId"])
+            
+            # Handle the single slotDateTime field
+            appointment_time = appointment.get("slotDateTime", "Unknown")
+            
+            enriched_appointments.append({
+                "Patient": student_name,
+                "DateTime": appointment_time,
+                "Status": appointment.get("status", "Unknown")
+            })
+
+        # Fetch health records of treated patients
+        health_records = list(health_records_collection.find({"doctorId": ObjectId(doctor_id)}))
+        enriched_health_records = []
+        for record in health_records:
+            student_name = get_user_name(record["studentId"])
+            
+            # Try multiple potential date field names
+            record_date = record.get("createdAt") or record.get("date") or record.get("dateTime") or record.get("timestamp") or "Unknown"
+            
+            enriched_health_records.append({
+                "Patient": student_name,
+                "Diagnosis": record.get("diagnosis", "Not specified"),
+                "Treatment": record.get("treatment", "Not specified"),
+                "Prescription": record.get("prescription", "Not specified"),
+                "DateTime": record_date
+            })
+
+        # AI Prompt (Using consistent DateTime field names)
+        gemini_prompt = f"""
+        You are assisting Dr. {doctor_name} with patient records.
+
+        Available Appointment Slots:
+        {free_slots}
+
+        Your Upcoming Appointments:
+        {enriched_appointments}
+
+        Your Past Treatments:
+        {enriched_health_records}
+
+        Answer the following question:
+        "{user_question}"
+        """
+
+        # Add debugging to see what's being passed to the AI
+        print(f"Sending prompt to Gemini AI:\n{gemini_prompt}")
+
+        response = model.generate_content(gemini_prompt)
+        final_answer = response.text if response and response.text else "I couldn't generate an answer."
+
+        return jsonify({"status": "success", "answer": final_answer})
+
+    except Exception as e:
+        print(f"Doctor insights error: {str(e)}")
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    try:
+        data = request.json
+        user_question = data.get("question")
+
+        # Get doctor ID from the JWT token and convert to ObjectId
+        doctor_id = g.user.get('_id')
+        print(f"Using doctor ID from token: {doctor_id}")
+
+        if not user_question:
+            return jsonify({"error": "Question is required"}), 400
+
+        # Fetch doctor details including available slots
+        doctor = users_collection.find_one({"_id": ObjectId(doctor_id)}, {"name": 1, "availableSlots": 1})
+        if not doctor:
+            return jsonify({"error": "Doctor not found"}), 404
+        
+        doctor_name = doctor.get("name", "Unknown Doctor")
+        available_slots = doctor.get("availableSlots", [])
+
+        # Extract only non-booked slots
+        free_slots = [slot["dateTime"] for slot in available_slots if not slot.get("isBooked", True)]
+
+        # Fetch doctor's upcoming appointments
         appointments = list(appointments_collection.find({"doctorId": ObjectId(doctor_id)}))
         enriched_appointments = []
         for appointment in appointments:
@@ -343,9 +430,12 @@ def doctor_insights():
                 "Date": record.get("createdAt", "Unknown")
             })
 
-        # AI Prompt
+        # AI Prompt (Ensuring Available Slots are Passed)
         gemini_prompt = f"""
         You are assisting Dr. {doctor_name} with patient records.
+
+        Available Appointment Slots:
+        {free_slots}
 
         Your Upcoming Appointments:
         {enriched_appointments}
@@ -364,6 +454,7 @@ def doctor_insights():
 
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
   
 
