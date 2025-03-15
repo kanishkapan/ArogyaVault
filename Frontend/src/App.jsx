@@ -61,10 +61,6 @@ const App = () => {
         <Route path="/ai-diagnosis" element={<Predictionchat />} />
         <Route path="/leave-concern" element={<Leavechat />} />
         <Route path="/recordform" element={<HealthRecordForm />} />
-
-        <Route path="/ai-assistant" element={<PrescriptionGenerator />} />
-        <Route path="/t" element={<DocDash />} />
-
         <Route path="/ai-assistant" element={<DoctorInsightsChat />} />
         <Route path="/slots" element={<DoctorTimeSlotSelector />} />
         <Route path="/prescriptions" element={<PrescriptionGenerator />} />
