@@ -29,6 +29,7 @@ import DoctorInsightsChat from "./components/aitanissa/DoctorInsightsChat";
 import DoctorTimeSlotSelector from "./components/Booking/DoctorTimeSlotSelector";
 import PrescriptionGenerator from "./components/aitanissa/PrescriptionGenerator";
 import Healthchat from "./components/aitanissa/Healthchat";
+import Noti from "./Pages/Noti";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -64,6 +65,7 @@ const App = () => {
         <Route path="/ai-assistant" element={<DoctorInsightsChat />} />
         <Route path="/slots" element={<DoctorTimeSlotSelector />} />
         <Route path="/prescriptions" element={<PrescriptionGenerator />} />
+        <Route path="/noti" element={<Noti />} />
 
        
       </Routes>
