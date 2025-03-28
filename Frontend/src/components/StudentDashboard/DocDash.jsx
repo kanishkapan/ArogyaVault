@@ -308,7 +308,7 @@ const DocDash = () => {
             { name: "Appointments", icon: Calendar },
             { name: "Prescriptions", icon: FileText },
             { name: "Video-Call", icon: Video },
-            { name: "AI Assistant", icon: Bot },
+            { name: "AI-Assistant", icon: Bot },
           ].map((item) => (
             <Link
               key={item.name}
