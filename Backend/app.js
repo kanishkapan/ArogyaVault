@@ -38,22 +38,6 @@ const io = new Server(server, {
 const onlineUsers = new Map();  
 app.set("onlineUsers", onlineUsers); // ✅ Store online users globally
 
-//retrive token
-// io.use((socket, next) => {
-//   const token = socket.request.cookies?.jwt; // Get the token from cookies
-//   if (!token) {
-//     console.log("No token found, user not authenticated!");
-//     return next(new Error("Authentication error"));
-//   }
-
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     socket.user = decoded; // Attach user info to the socket
-//     next();
-//   } catch (err) {
-//     return next(new Error("Authentication error"));
-//   }
-// });
 
 import cookie from "cookie";
 
