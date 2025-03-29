@@ -33,6 +33,7 @@ import PrescriptionGenerator from "./components/aitanissa/PrescriptionGenerator"
 import Healthchat from "./components/aitanissa/Healthchat";
 import Noti from "./Pages/Noti";
 import Payments from "./components/Payments/payment";
+import NotiScreen from "./components/Noti/NotiScreen";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -98,6 +99,7 @@ const App = () => {
         <Route path="/prescriptions" element={<PrescriptionGenerator />} />
         <Route path="/noti" element={<Noti />} />
         <Route path="/payment" element={<Payments />} />
+        <Route path="/notiscreen" element={<NotiScreen />} />
 
        
       </Routes>
