@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
 
   
   // Store the user ID when they connect
-  socket.on("setUserId", (userId) => {
+  socket.on("setUserId",async (userId) => {
     onlineUsers.set(userId, socket);
     console.log(`User ${userId} is online.`);
   });
