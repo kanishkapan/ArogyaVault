@@ -155,7 +155,7 @@ const NotiScreen = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg w-full max-w-8xl mx-auto border border-gray-200">
-      {/* Header */}
+      {/* Header */}.
       <div className="bg-green-600 p-3 sm:p-4 rounded-t-lg">
         <div className="flex justify-between items-center">
           {/* Mobile menu button */}
