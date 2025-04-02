@@ -90,11 +90,21 @@ export const updateAppointmentStatus = async (req, res) => {
  
      console.log("Appointment Object:", appointment);
      
+
      if (onlineUsers.has(studentId.toString())) {
       const patientSocket = onlineUsers.get(studentId.toString());
       console.log(`✅ Sending update to patient ${studentId}`);
       console.log("Patient Socket ID:", patientSocket?.id); // Log socket ID
 
+      //FOR DELAYED/PENDING
+      // let notificationMessage = "";
+      // if (status === "confirmed") {
+      //   notificationMessage = `Your appointment has been confirmed.`;
+      // } else if (status === "cancelled") {
+      //   notificationMessage = `Your appointment has been cancelled.`;
+      // } else if (status === "pending") {
+      //   notificationMessage = `Your appointment is pending and will be rescheduled soon.`;
+      // }
       // Emit real-time notification to patient
       patientSocket.emit("appointmentUpdate", {
         message: `Your appointment has been ${status}`,

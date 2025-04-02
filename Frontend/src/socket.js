@@ -33,5 +33,15 @@ socket.on("appointmentUpdate", (data) => {
   console.log("Appointment Update Notification:", data);
   alert(data.message);
 });
+socket.on("newLeaveRequest", (data) => {
+  console.log("newLeave Request:",data);
+  alert(`${data.message}`);
+});
+
+socket.on("leaveStatusUpdate", (data) => {
+  console.log("Leave status updated: ",data);
+  alert(`${data.message}`);
+});
+
 
 export default socket;
