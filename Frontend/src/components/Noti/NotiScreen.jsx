@@ -119,6 +119,18 @@ const NotiScreen = () => {
     };
   }, [isFilterOpen]);
 
+  // useEffect(() => {
+  //   const fetchNotifications = async () => {
+  //     try {
+  //       const { data } = await axios.get("http://your-backend-url/api/notifications");
+  //       setNotifications(data); // Assuming API returns an array
+  //     } catch (error) {
+  //       console.error("Error fetching notifications", error);
+  //     }
+  //   };
+
+  //   fetchNotifications();
+  // }, []);
   // Get icon based on notification type
   const getIcon = (type) => {
     switch(type) {
