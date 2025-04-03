@@ -35,6 +35,7 @@ import Noti from "./Pages/Noti";
 import Payments from "./components/Payments/payment";
 import NotiScreen from "./components/Noti/NotiScreen";
 import Voice from "./components/Voice Assistant/Voice";
+import Notibell from "./components/Noti/Notibell";
 const Home = () => <div className="text-center mt-10">🏠 Welcome to Home</div>;
 const AIBot = () => <div className="text-center mt-10">🤖 AI Bot Page</div>;
 
@@ -102,6 +103,7 @@ const App = () => {
         <Route path="/payment" element={<Payments />} />
         <Route path="/notiscreen" element={<NotiScreen />} />
         <Route path="/voice" element={<Voice/>} />
+        <Route path="/bell" element={<Notibell/>} />
 
        
       </Routes>
