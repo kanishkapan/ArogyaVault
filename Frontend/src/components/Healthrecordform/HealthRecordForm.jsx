@@ -13,16 +13,36 @@ const HealthRecordForm = () => {
     externalDoctorName: '',
     externalHospitalName: '',
   });
+  const [doctorList, setDoctorList] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  // Set default date to today's date when component mounts
   useEffect(() => {
     if (!formData.date) {
       const today = new Date().toISOString().split('T')[0];
       setFormData(prev => ({ ...prev, date: today }));
     }
   }, [formData.date]);
+
+  // Fetch doctors list on mount
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await api.get("/user/doctors");
+        if (response.status === 200) {
+          // Assuming response.data is an array of doctors with _id, name and specialization properties
+          setDoctorList(response.data);
+        } else {
+          setMessage("Failed to load doctors list.");
+        }
+      } catch (error) {
+        setMessage("Error fetching doctors list.");
+      }
+    };
+    fetchDoctors();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -70,18 +90,13 @@ const HealthRecordForm = () => {
         { withCredentials: true }
       );
 
-      if (!response.ok) {
-        const errorData = await response.data;
-        throw new Error(errorData.message || 'Something went wrong!');
-      }
       if (response.status === 200 || response.status === 201) {
         console.log("✅ Navigation Triggered");
         navigate("/profile");
       }
       setAttachments([]);
-
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.response?.data?.message || error.message);
     }
   };
 
@@ -95,20 +110,27 @@ const HealthRecordForm = () => {
           <p className="mb-4 text-center text-sm text-green-700">{message}</p>
         )}
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* Doctor ID */}
+          {/* Doctor Selection */}
           <div className="mb-5">
             <label htmlFor="doctorId" className="block text-gray-700 font-semibold mb-2">
-              Doctor ID
+              Select Doctor
             </label>
-            <input
-              type="text"
+            <select
               id="doctorId"
               name="doctorId"
               value={formData.doctorId}
               onChange={handleChange}
-              placeholder="Enter Doctor ID (if applicable)"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300 transition duration-200"
-            />
+              required={!formData.isManualUpload}
+            >
+              <option value="">-- Select a doctor --</option>
+              {doctorList.map((doctor) => (
+                // Use doctor._id as the value and include additional info if available.
+                <option key={doctor._id} value={doctor._id}>
+                  {doctor.name} {doctor.specialization ? `- ${doctor.specialization}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
           {/* Diagnosis */}
           <div className="mb-5">
