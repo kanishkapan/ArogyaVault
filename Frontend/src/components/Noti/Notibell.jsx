@@ -29,15 +29,19 @@ const Notibell = () => {
     }
   };
 
-  // Mark notification as read locally (since we don't have the PATCH endpoint)
-  const markAsRead = (id) => {
-    // Only update the UI state without making API call
-    setNotifications(notifications.map(notif => 
-      notif._id === id ? { ...notif, isRead: true } : notif
-    ));
-    
-    // Update unread count
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  
+  const markAsRead = async(id) => {
+    try {
+      await api.patch(`/notifications/mark-single-read/${id}`);
+  
+      setNotifications(notifications.map(notif => 
+        notif._id === id ? { ...notif, isRead: true } : notif
+      ));
+  
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
   };
 
   // Toggle dropdown
@@ -117,10 +121,18 @@ const Notibell = () => {
               {unreadCount > 0 && (
                 <button 
                   className="text-sm text-blue-500 hover:text-blue-700"
-                  onClick={() => {
-                    // Mark all as read locally since we don't have the API endpoint
-                    setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
-                    setUnreadCount(0);
+                  onClick={async () => {
+                    try {
+                      const userId = localStorage.getItem("userId"); 
+                      console.log(userId);
+                      await api.patch(`notifications/mark-all-read/${userId}`);
+              
+                      // Update UI after success
+                      setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
+                      setUnreadCount(0);
+                    } catch (err) {
+                      console.error("Failed to mark all notifications as read:", err);
+                    }
                   }}
                 >
                   Mark all as read
