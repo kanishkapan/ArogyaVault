@@ -117,10 +117,18 @@ const Notibell = () => {
               {unreadCount > 0 && (
                 <button 
                   className="text-sm text-blue-500 hover:text-blue-700"
-                  onClick={() => {
-                    // Mark all as read locally since we don't have the API endpoint
-                    setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
-                    setUnreadCount(0);
+                  onClick={async () => {
+                    try {
+                      const userId = localStorage.getItem("userId"); 
+                      console.log(userId);
+                      await api.patch(`notifications/mark-all-read/${userId}`);
+              
+                      // Update UI after success
+                      setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
+                      setUnreadCount(0);
+                    } catch (err) {
+                      console.error("Failed to mark all notifications as read:", err);
+                    }
                   }}
                 >
                   Mark all as read
