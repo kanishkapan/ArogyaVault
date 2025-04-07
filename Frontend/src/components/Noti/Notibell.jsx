@@ -29,15 +29,19 @@ const Notibell = () => {
     }
   };
 
-  // Mark notification as read locally (since we don't have the PATCH endpoint)
-  const markAsRead = (id) => {
-    // Only update the UI state without making API call
-    setNotifications(notifications.map(notif => 
-      notif._id === id ? { ...notif, isRead: true } : notif
-    ));
-    
-    // Update unread count
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  
+  const markAsRead = async(id) => {
+    try {
+      await api.patch(`/notifications/mark-single-read/${id}`);
+  
+      setNotifications(notifications.map(notif => 
+        notif._id === id ? { ...notif, isRead: true } : notif
+      ));
+  
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
   };
 
   // Toggle dropdown

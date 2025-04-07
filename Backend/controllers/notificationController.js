@@ -36,3 +36,23 @@ export const markAllNotificationsAsRead = async (req, res) => {
       });
     }
   };
+  export const markSingleNotificationAsRead = async (req, res) => {
+    try {
+      const { notificationId } = req.params;
+  
+      const updated = await Notification.findByIdAndUpdate(
+        notificationId,
+        { isRead: true },
+        { new: true }
+      );
+  
+      if (!updated) {
+        return res.status(404).json({ message: "Notification not found" });
+      }
+  
+      res.status(200).json({ message: "Marked as read", notification: updated });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
