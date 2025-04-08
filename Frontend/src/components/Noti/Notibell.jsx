@@ -69,6 +69,21 @@ const Notibell = () => {
     };
   }, []);
   
+  //for leave notifications
+  useEffect(() => {
+    const handleNewLeaveNotification = (data) => {
+      console.log("📬 New leave notification:", data);
+      setUnreadCount((prev) => prev + 1);
+      setNotifications((prev) => [data.notification, ...prev]);
+    };
+  
+    socket.on("newLeaveNotification", handleNewLeaveNotification);
+  
+    return () => {
+      socket.off("newLeaveNotification", handleNewLeaveNotification);
+    };
+  }, []);
+  
 
   // Close dropdown when clicking outside
   useEffect(() => {

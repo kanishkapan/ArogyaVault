@@ -52,6 +52,8 @@ const Dashboard = () => {
     };
 
     fetchLeaveApplications();
+    
+
   }, []);
 
   // Fetch health records
