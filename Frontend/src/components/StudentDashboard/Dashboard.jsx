@@ -113,7 +113,7 @@ const Dashboard = () => {
     });
     
     socket.on("newAppointment", (data) => {
-      console.log("New appointment received:", data);
+      console.log(" 📥New appointment received:", data);
       console.log('recieved at',new Date().toLocaleTimeString());
       showAlert(data.message, "custom", 10000);
       setNotificationCount(prev => prev + 1);
@@ -124,6 +124,7 @@ const Dashboard = () => {
           name: data.appointment.doctorName || data.appointment.doctorId?.name || "Unknown"
         }
       };
+      console.log("calling set apptment")
       setAppointments((prev) => [updatedAppointment, ...prev]);
     });
   
