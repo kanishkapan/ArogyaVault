@@ -141,3 +141,109 @@ export const updateLeaveStatus = async (req, res) => {
         res.status(500).json({ message: error.message });
       }
     };
+
+
+    export const adminSearchHealthRecords = async (req, res) => {
+      try {
+        const { query } = req.query;
+        console.log("Admin search query:", query);
+        
+        // Create the base query conditions
+        const searchConditions = [
+          { diagnosis: { $regex: query, $options: "i" } },
+          { treatment: { $regex: query, $options: "i" } },
+          { prescription: { $regex: query, $options: "i" } },
+          { externalDoctorName: { $regex: query, $options: "i" } },
+          { externalHospitalName: { $regex: query, $options: "i" } }
+        ];
+        
+        // Find users (both students and doctors) that match the query
+        const matchingUsers = await User.find({
+          $or: [
+            { name: { $regex: query, $options: "i" } },
+            { specialization: { $regex: query, $options: "i" } }
+          ]
+        });
+        
+        // Extract IDs of matching users based on their role
+        const studentIds = matchingUsers
+          .filter(user => user.role === "student")
+          .map(student => student._id);
+        
+        const doctorIds = matchingUsers
+          .filter(user => user.role === "doctor")
+          .map(doctor => doctor._id);
+        
+        // Add user IDs to search conditions if any were found
+        if (studentIds.length > 0) {
+          searchConditions.push({ studentId: { $in: studentIds } });
+        }
+        
+        if (doctorIds.length > 0) {
+          searchConditions.push({ doctorId: { $in: doctorIds } });
+        }
+        
+        // Execute the search with all conditions
+        const records = await HealthRecord.find({
+          $or: searchConditions
+        })
+          .populate("studentId", "name")
+          .populate("doctorId", "name specialization");
+        
+        console.log("Admin search - Records found:", records.length);
+        res.status(200).json(records);
+      } catch (error) {
+        console.error("Error in admin search for health records:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+      }
+    };
+    
+    export const adminGetSearchSuggestions = async (req, res) => {
+      try {
+        const { query } = req.query;
+        
+        if (!query) {
+          return res.status(400).json({ message: "Query parameter is required" });
+        }
+        
+        // Get suggestions from health records
+        const recordSuggestions = await HealthRecord.find({
+          $or: [
+            { diagnosis: { $regex: query, $options: "i" } },
+            { treatment: { $regex: query, $options: "i" } },
+            { prescription: { $regex: query, $options: "i" } },
+            { externalDoctorName: { $regex: query, $options: "i" } },
+            { externalHospitalName: { $regex: query, $options: "i" } }
+          ]
+        }).limit(5);
+        
+        // Get suggestions from users (students and doctors)
+        const userSuggestions = await User.find({
+          $or: [
+            { name: { $regex: query, $options: "i" } },
+            { specialization: { $regex: query, $options: "i" } }
+          ]
+        }).limit(5);
+        
+        // Combine and deduplicate suggestions
+        const diagnosisSuggestions = [...new Set(recordSuggestions.map(r => r.diagnosis))];
+        const nameSuggestions = [...new Set(userSuggestions.map(u => u.name))];
+        const specializationSuggestions = [...new Set(
+          userSuggestions
+            .filter(u => u.role === "doctor" && u.specialization)
+            .map(d => d.specialization)
+        )];
+        
+        // Combine all suggestion types
+        const allSuggestions = [
+          ...diagnosisSuggestions,
+          ...nameSuggestions,
+          ...specializationSuggestions
+        ].filter(Boolean).slice(0, 10); // Take top 10 non-null suggestions
+        
+        res.status(200).json(allSuggestions);
+      } catch (error) {
+        console.error("Error fetching admin search suggestions:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+      }
+    };
