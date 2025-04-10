@@ -3,6 +3,8 @@ import { User } from "../models/userModel.js";
 import { HealthRecord } from "../models/healthRecordModel.js";
 import{Notification} from "../models/notificationModel.js"
 
+import sendMail from "../utils/mailer.js";
+
 export const getMedicalLeaveApplications = async (req, res) => {
     try {
       const leaves = await MedicalLeave.find()
@@ -74,6 +76,34 @@ export const updateLeaveStatus = async (req, res) => {
       }
       else {
         console.log(`Student ${leave.studentId} is offline.`);
+      }
+
+      //sending mail 
+      try {
+        const studentDetails = await User.findById(leave.studentId).select("name email");
+        if (studentDetails?.email) {
+          const mailSubject = `📝 Medical Leave ${status}`;
+          const mailText = `Your medical leave request has been ${status}.`;
+          const mailHtml = `
+            <h3>Medical Leave Status Update</h3>
+            <p><strong>Student:</strong> ${studentDetails.name}</p>
+            <p><strong>Status:</strong> <span style="text-transform: capitalize;">${status}</span></p>
+            <p>Your medical leave request has been <strong>${status}</strong>.</p>
+          `;
+  
+          await sendMail(
+            studentDetails.email,
+            mailSubject,
+            mailText,
+            mailHtml
+          );
+  
+          console.log("✅ Email sent to student:", studentDetails.email);
+        } else {
+          console.log("❌ Student email not found.");
+        }
+      } catch (emailError) {
+        console.error("❌ Error sending email to student:", emailError);
       }
 
   
