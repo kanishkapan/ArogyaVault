@@ -5,6 +5,7 @@ import { Bell, Settings, Search, Eye, Calendar, FileText, User, UserPlus, Users,
 import {api} from '../../axios.config';
 import Notibell from '../Noti/Notibell';
 import socket from "../../socket"; // Make sure it's the same shared socket instance
+import { showAlert } from '../alert-system';
 
 const AdminDashboard = () => {
   // Sample data for student leave applications
@@ -14,6 +15,11 @@ const AdminDashboard = () => {
 
   // Sample data for health records
   const [healthRecords, setHealthRecords] = useState([]);
+
+  // New states for search suggestions
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const fetchHealthRecords = async () => {
@@ -81,24 +87,79 @@ const AdminDashboard = () => {
     fetchLeaveApplications();
      socket.on("newLeaveNotification", (data) => {
           console.log("📬 Leave notification received in dashboard:", data);
-      
-          if (data.leave) {
-            setLeaveApplications((prev) => {
-              const exists = prev.some((item) => item._id === data.leave._id);
-              if (exists) {
-                return prev.map((item) =>
-                  item._id === data.leave._id ? { ...item, ...data.leave } : item
-                );
-              } else {
-                return [data.leave, ...prev];
-              }
-            });
+          
+          if (data.notification) {
+            showAlert(data.notification.message);
           }
+          console.log('leave object is ',data.leave);
+          if (data.leave) {
+            
+              setLeaveApplications((prev) => {
+                const leaveId = data.leave._id || data.leave.id;
+                const formattedLeave = {
+                  ...data.leave,
+                  _id: leaveId,
+                  duration: `${data.leave.fromDate} to ${data.leave.toDate}` // Add formatted duration
+                };
+        
+                const exists = prev.some((item) => item._id === data.leave.id);
+                if (exists) {
+                  return prev.map((item) =>
+                    item._id === data.leave.id ? { ...item, ...formattedLeave } : item
+                  );
+                } else {
+                  return [formattedLeave, ...prev];
+                }
+                });
+            
+              
+            }
+          
         });
-        return () => {
+      return () => {
           socket.off("newLeaveNotification");
-        };
+      };
   }, []);
+
+  // Debounced API call for search suggestions
+      useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+          if (searchQuery) {
+            api
+              .get("/medical-leaves/searchSuggestions", { params: { query: searchQuery } })
+              .then((res) => {
+                setSuggestions(res.data);
+              })
+              .catch((err) => {
+                console.error("Error fetching suggestions:", err);
+                setSuggestions([]);
+              });
+          } else {
+            setSuggestions([]);
+          }
+        }, 300);
+    
+        return () => clearTimeout(delayDebounceFn);
+      }, [searchQuery]);
+    
+      const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+      };
+  
+      // When a search suggestion is clicked, use it as a query to search health records
+    const handleSuggestionClick = (suggestion) => {
+      setSearchQuery(suggestion);
+      setSuggestions([]);
+      api
+        .get("/medical-leaves/search", { params: { query: suggestion } })
+        .then((res) => {
+          setSearchResults(res.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching search results:", err);
+          setSearchResults([]);
+        });
+    };
 
   const updateLeaveStatus = async (id, status) => {
     try {
@@ -168,10 +229,29 @@ const AdminDashboard = () => {
           <div className="flex items-center space-x-4">
         
             <div className="relative">
-              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
-            
-              <input type="text" placeholder="Search..." className="pl-10 pr-4 py-2 border rounded-lg" />
-            </div>
+                          <Search className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            className="pl-10 pr-4 py-2 border rounded-lg"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                          />
+                          {/* Dropdown for suggestions */}
+                          {suggestions.length > 0 && (
+                            <div className="absolute bg-white border rounded-lg mt-1 w-full z-10">
+                              {suggestions.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                  onClick={() => handleSuggestionClick(item)}
+                                >
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
             <Notibell className="w-6 h-6 text-gray-400 cursor-pointer" />
           
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
@@ -266,7 +346,7 @@ const AdminDashboard = () => {
                   </thead> 
                   <tbody className="bg-white divide-y divide-gray-200">
   {leaveApplications.map((app,index) => (
-    <tr key={app.id} className="hover:bg-gray-50">
+    <tr key={app._id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index+1}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.studentName}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.studentId}</td>
@@ -546,6 +626,40 @@ const AdminDashboard = () => {
             </div>
           )}
         </div>
+        {/* Modal for displaying search results */}
+        {searchResults.length > 0 && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">
+                Search Results
+              </h3>
+              {searchResults.map((record) => (
+                <div key={record._id} className="mb-4 border-b pb-2">
+                  <p>
+                    <strong>Diagnosis:</strong> {record.diagnosis}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(record.date).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Treatment:</strong> {record.treatment || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Prescription:</strong>{" "}
+                    {record.prescription || "N/A"}
+                  </p>
+                </div>
+              ))}
+              <button
+                onClick={() => setSearchResults([])}
+                className="mt-4 bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

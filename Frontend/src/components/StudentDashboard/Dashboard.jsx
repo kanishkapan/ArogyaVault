@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Notibell from "../Noti/Notibell.jsx";
 import socket from "../../socket.js";
+import { showAlert } from "../alert-system.js";
+
 
 const Dashboard = () => {
   // States for various sections
@@ -57,6 +59,17 @@ const Dashboard = () => {
     };
 
     fetchLeaveApplications();
+    
+    socket.on("newNotification", (data) => {
+      if (data.notification?.type === "leave") {
+        showAlert(data.notification.message);
+      }
+    });
+  
+    return () => {
+      socket.off("newNotification");
+    };
+
   }, []);
 
   // Fetch health records
@@ -436,7 +449,7 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {leaveApplications.map((leave, index) => (
-                    <tr key={leave.id}>
+                    <tr key={leave._id}>
                       <td className="px-4 py-2 border-b">{index + 1}</td>
                       <td className="px-4 py-2 border-b">{leave.date}</td>
                       <td className="px-4 py-2 border-b">{leave.fromDate}</td>
