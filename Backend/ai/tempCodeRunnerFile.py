@@ -1,4 +1,4 @@
-import speech_recognition as sr
+import SpeechRecognition as sr
 import pyttsx3
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
