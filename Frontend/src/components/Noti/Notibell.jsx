@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { api } from './../../axios.config.js';
+import socket  from "../../socket.js";
+
 
 const Notibell = () => {
   const [notifications, setNotifications] = useState([]);
@@ -53,6 +55,35 @@ const Notibell = () => {
       fetchNotifications();
     }
   };
+  useEffect(() => {
+    const handleNewNotification = (data) => {
+      console.log("🔔 New real-time notification received in Notibell:", data);
+      setUnreadCount((prev) => prev + 1); // increment count
+      setNotifications((prev) => [data.notification, ...prev]); // optional: show new notif
+    };
+  
+    socket.on("newNotification", handleNewNotification);
+  
+    return () => {
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, []);
+  
+  //for leave notifications
+  useEffect(() => {
+    const handleNewLeaveNotification = (data) => {
+      console.log("📬 New leave notification:", data);
+      setUnreadCount((prev) => prev + 1);
+      setNotifications((prev) => [data.notification, ...prev]);
+    };
+  
+    socket.on("newLeaveNotification", handleNewLeaveNotification);
+  
+    return () => {
+      socket.off("newLeaveNotification", handleNewLeaveNotification);
+    };
+  }, []);
+  
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -73,9 +104,9 @@ const Notibell = () => {
     fetchNotifications();
     
     // Set up polling every minute
-    const interval = setInterval(fetchNotifications, 60000);
+    // const interval = setInterval(fetchNotifications, 60000);
     
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, []);
 
   // Format notification timestamp

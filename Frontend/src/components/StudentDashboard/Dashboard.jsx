@@ -11,6 +11,8 @@ import {
   MessageCircle,
 } from "lucide-react";
 import Notibell from "../Noti/Notibell.jsx";
+import socket from "../../socket.js";
+
 
 const Dashboard = () => {
   const [healthRecords, setHealthRecords] = useState([]);
@@ -24,6 +26,7 @@ const Dashboard = () => {
   const [leaveLoading, setLeaveLoading] = useState(true);
   const [leaveError, setLeaveError] = useState(null);
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   // New states for search suggestions
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +52,8 @@ const Dashboard = () => {
     };
 
     fetchLeaveApplications();
+    
+
   }, []);
 
   // Fetch health records
@@ -73,6 +78,8 @@ const Dashboard = () => {
     fetchHealthRecords();
   }, []);
 
+  
+  
   // Fetch student appointments
   useEffect(() => {
     const fetchStudentAppointments = async () => {
@@ -98,6 +105,37 @@ const Dashboard = () => {
     };
 
     fetchStudentAppointments();
+
+
+    socket.on("appointmentUpdate", (data) => {
+      console.log("🔔 Real-time appointment update received:", data);
+      showAlert(data.message, 'custom', 10000);
+      fetchStudentAppointments();
+      
+    });
+    
+    socket.on("newAppointment", (data) => {
+      console.log(" 📥New appointment received:", data);
+      console.log('recieved at',new Date().toLocaleTimeString());
+      showAlert(data.message, "custom", 10000);
+      setNotificationCount(prev => prev + 1);
+      const updatedAppointment = { 
+        ...data.appointment,
+        doctorId: {
+          ...(data.appointment.doctorId || {}),
+          name: data.appointment.doctorName || data.appointment.doctorId?.name || "Unknown"
+        }
+      };
+      console.log("calling set apptment")
+      setAppointments((prev) => [updatedAppointment, ...prev]);
+    });
+  
+    // ✅ Clean up on component unmount
+    return () => {
+      socket.off("appointmentUpdate");
+      socket.off("newAppointment");
+    };
+
   }, []);
 
     // Debounced API call for search suggestions
@@ -345,7 +383,7 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            <Notibell className="w-6 h-6 text-gray-400 cursor-pointer" />
+            <Notibell count={notificationCount} setCount={setNotificationCount} className="w-6 h-6 text-gray-400 cursor-pointer" />
             <Settings className="w-6 h-6 text-gray-400" />
           </div>
         </div>
