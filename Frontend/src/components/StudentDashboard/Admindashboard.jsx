@@ -380,60 +380,67 @@ const AdminDashboard = () => {
 
           {/* Health Records Tab */}
           {activeTab === 'health' && (
-  <div>
-    <div className="flex justify-between items-center mb-6">
+  <div className="w-full max-w-full">
+    <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
       <h2 className="text-xl font-semibold">Student Health Records</h2>
-      <div className="flex space-x-2">
-        <input type="text" placeholder="Search by ID or Name" className="border rounded-lg px-3 py-2" />
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+        <input 
+          type="text" 
+          placeholder="Search by ID or Name" 
+          className="border rounded-lg px-3 py-2 w-full sm:w-auto" 
+        />
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center">
           <FileText className="w-4 h-4 mr-2" /> Add Record
         </button>
       </div>
     </div>
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record ID</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagnosis</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prescription</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {healthRecords.map((record, index) => (
-            <tr key={record.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.studentName}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.studentId}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.gender}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.diagnosis}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.date}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{record.prescription}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {record.docUrls && record.docUrls.length > 0 ? (
-                  <button
-                    onClick={() => setSelectedRecord(record)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    View Attachments
-                  </button>
-                ) : (
-                  <span className="text-gray-500">No Attachments</span>
-                )}
-              </td>
+    
+    <div className="w-full overflow-hidden">
+      <div className="overflow-x-auto shadow rounded-lg">
+        <table className="w-full table-fixed divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="w-[8%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record ID</th>
+              <th className="w-[14%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
+              <th className="w-[12%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
+              <th className="w-[10%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+              <th className="w-[14%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagnosis</th>
+              <th className="w-[12%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="w-[14%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prescription</th>
+              <th className="w-[16%] px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {healthRecords.map((record, index) => (
+              <tr key={record.id} className="hover:bg-gray-50">
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 truncate">{index + 1}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.studentName}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.studentId}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.gender}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.diagnosis}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.date}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate">{record.prescription}</td>
+                <td className="px-3 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm truncate">
+                  {record.docUrls && record.docUrls.length > 0 ? (
+                    <button
+                      onClick={() => setSelectedRecord(record)}
+                      className="text-blue-600 hover:text-blue-900 text-xs sm:text-sm"
+                    >
+                      View Attachments
+                    </button>
+                  ) : (
+                    <span className="text-gray-500 text-xs sm:text-sm">No Attachments</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       
       {selectedRecord && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-          <div className="relative top-20 mx-auto p-5 border w-[90%] md:w-[50%] shadow-lg rounded-md bg-white">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-4 sm:pt-10">
+          <div className="relative mx-auto p-4 sm:p-5 border w-[95%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-medium leading-none mb-4">
               Attachments for {selectedRecord.studentName}
             </h3>
@@ -449,13 +456,14 @@ const AdminDashboard = () => {
                     frameBorder={1}
                     width="100%"
                     height={300}
+                    className="border border-gray-300"
                   ></iframe>
                 ) : (
                   // Render Image
                   <img
                     src={attachment.url}
                     alt={`Attachment ${index + 1}`}
-                    className="max-w-full h-auto border border-gray-300"
+                    className="max-w-full h-auto border border-gray-300 mx-auto"
                   />
                 )}
                 <a
@@ -470,12 +478,14 @@ const AdminDashboard = () => {
             ))}
 
             {/* Close Button */}
-            <button
-              onClick={() => setSelectedRecord(null)}
-              className="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Close
-            </button>
+            <div className="flex justify-center sm:justify-end mt-5">
+              <button
+                onClick={() => setSelectedRecord(null)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
