@@ -5,6 +5,7 @@ import { Bell, Settings, Search, Eye, Calendar, FileText, User, UserPlus, Users,
 import {api} from '../../axios.config';
 import Notibell from '../Noti/Notibell';
 import socket from "../../socket"; // Make sure it's the same shared socket instance
+import { showAlert } from '../alert-system';
 
 const AdminDashboard = () => {
   // Sample data for student leave applications
@@ -86,23 +87,38 @@ const AdminDashboard = () => {
     fetchLeaveApplications();
      socket.on("newLeaveNotification", (data) => {
           console.log("📬 Leave notification received in dashboard:", data);
-      
-          if (data.leave) {
-            setLeaveApplications((prev) => {
-              const exists = prev.some((item) => item._id === data.leave._id);
-              if (exists) {
-                return prev.map((item) =>
-                  item._id === data.leave._id ? { ...item, ...data.leave } : item
-                );
-              } else {
-                return [data.leave, ...prev];
-              }
-            });
+          
+          if (data.notification) {
+            showAlert(data.notification.message);
           }
+          console.log('leave object is ',data.leave);
+          if (data.leave) {
+            
+              setLeaveApplications((prev) => {
+                const leaveId = data.leave._id || data.leave.id;
+                const formattedLeave = {
+                  ...data.leave,
+                  _id: leaveId,
+                  duration: `${data.leave.fromDate} to ${data.leave.toDate}` // Add formatted duration
+                };
+        
+                const exists = prev.some((item) => item._id === data.leave.id);
+                if (exists) {
+                  return prev.map((item) =>
+                    item._id === data.leave.id ? { ...item, ...formattedLeave } : item
+                  );
+                } else {
+                  return [formattedLeave, ...prev];
+                }
+                });
+            
+              
+            }
+          
         });
-        return () => {
+      return () => {
           socket.off("newLeaveNotification");
-        };
+      };
   }, []);
 
   // Debounced API call for search suggestions
@@ -330,7 +346,7 @@ const AdminDashboard = () => {
                   </thead> 
                   <tbody className="bg-white divide-y divide-gray-200">
   {leaveApplications.map((app,index) => (
-    <tr key={app.id} className="hover:bg-gray-50">
+    <tr key={app._id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index+1}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.studentName}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.studentId}</td>
