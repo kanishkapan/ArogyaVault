@@ -281,7 +281,13 @@ const AdminDashboard = () => {
                     </tr>
                   </thead> 
                   <tbody className="bg-white divide-y divide-gray-200">
-  {leaveApplications.map((app,index) => (
+  {[...leaveApplications]
+        .sort((a, b) => {
+          const aStart = new Date(a.duration.split(" to ")[0]);
+          const bStart = new Date(b.duration.split(" to ")[0]);
+          return bStart - aStart; // Sort by startDate (descending)
+        })
+        .map((app,index) => (
     <tr key={app._id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index+1}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.studentName}</td>
