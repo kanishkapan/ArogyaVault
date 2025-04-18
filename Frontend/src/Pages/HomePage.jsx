@@ -13,7 +13,6 @@ const HomePage = () => {
     <div>
 
 
-<MedicalLandingPage/>
 <HeroSection/>
 <MedicalServices/>
 <HealthcareHeader/>
