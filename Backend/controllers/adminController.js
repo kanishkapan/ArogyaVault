@@ -6,27 +6,42 @@ import{Notification} from "../models/notificationModel.js"
 import sendMail from "../utils/mailer.js";
 
 export const getMedicalLeaveApplications = async (req, res) => {
-    try {
-      const leaves = await MedicalLeave.find()
-      .populate("studentId", "name gender email phone dateOfBirth") // Populate student details
-      .populate("healthRecordId", "diagnosis treatment prescription date doctorId isManualUpload externalDoctorName externalHospitalName attachments") // Populate health record details
-      .populate("approvedBy", "name email"); // Select only these fields
-  
-      const formattedLeaves = leaves.map((leave) => ({
-        id: leave._id,
-        studentName: leave.studentId.name,
-        studentId: leave.studentId._id,
-        gender: leave.studentId.gender,
-        duration: `${leave.fromDate.toISOString().split("T")[0]} to ${leave.toDate.toISOString().split("T")[0]}`,
-        diagnosis: leave.healthRecordId?.diagnosis,
+  try {
+    const leaves = await MedicalLeave.find()
+      .populate("studentId", "name gender email phone dateOfBirth")
+      .populate("healthRecordId", "diagnosis treatment prescription date doctorId isManualUpload externalDoctorName externalHospitalName attachments")
+      .populate("approvedBy", "name email");
+
+    const formattedLeaves = leaves.map((leave) => {
+      // Handle cases where associated data might be missing
+      const studentName = leave.studentId ? leave.studentId.name : "Unknown";
+      const studentId = leave.studentId ? leave.studentId._id : null;
+      const gender = leave.studentId ? leave.studentId.gender : "Unknown";
+      
+      // Safely format dates
+      const fromDateStr = leave.fromDate ? leave.fromDate.toISOString().split("T")[0] : "N/A";
+      const toDateStr = leave.toDate ? leave.toDate.toISOString().split("T")[0] : "N/A";
+      
+      return {
+        id: leave._id, // Always use id in the response to match frontend expectation
+        _id: leave._id, // Include original _id as well for safety
+        studentName,
+        studentId,
+        gender,
+        duration: `${fromDateStr} to ${toDateStr}`,
+        fromDate: fromDateStr,
+        toDate: toDateStr,
+        diagnosis: leave.healthRecordId ? leave.healthRecordId.diagnosis : null,
         status: leave.status,
-      }));
-  
-      res.status(200).json(formattedLeaves);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+      };
+    });
+
+    res.status(500).json(formattedLeaves);
+  } catch (error) {
+    console.error("Error in getMedicalLeaveApplications:", error);
+    res.status(500).json({ message: error.message });
+  }
+};  
   
   
 

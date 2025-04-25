@@ -85,41 +85,44 @@ const AdminDashboard = () => {
       }
     };
     fetchLeaveApplications();
-     socket.on("newLeaveNotification", (data) => {
-          console.log("📬 Leave notification received in dashboard:", data);
+    
+    socket.on("newLeaveNotification", (data) => {
+      console.log("📬 Leave notification received in dashboard:", data);
+      
+      if (data.notification) {
+        showAlert(data.notification.message);
+      }
+      console.log('leave object is ', data.leave);
+      
+      if (data.leave) {
+        setLeaveApplications((prev) => {
+          // Ensure we always use _id as the identifier from backend, but store as id in frontend
+          const leaveId = data.leave._id;
           
-          if (data.notification) {
-            showAlert(data.notification.message);
+          const formattedLeave = {
+            ...data.leave,
+            id: leaveId, // Store as id for frontend consistency
+            duration: `${data.leave.fromDate} to ${data.leave.toDate}`
+          };
+    
+          // Check if item exists using the id property that our frontend uses
+          const exists = prev.some((item) => item.id === leaveId);
+          
+          if (exists) {
+            return prev.map((item) =>
+              item.id === leaveId ? { ...item, ...formattedLeave } : item
+            );
+          } else {
+            return [formattedLeave, ...prev];
           }
-          console.log('leave object is ',data.leave);
-          if (data.leave) {
-            
-              setLeaveApplications((prev) => {
-                const leaveId = data.leave._id || data.leave.id;
-                const formattedLeave = {
-                  ...data.leave,
-                  _id: leaveId,
-                  duration: `${data.leave.fromDate} to ${data.leave.toDate}` // Add formatted duration
-                };
-        
-                const exists = prev.some((item) => item._id === data.leave.id);
-                if (exists) {
-                  return prev.map((item) =>
-                    item._id === data.leave.id ? { ...item, ...formattedLeave } : item
-                  );
-                } else {
-                  return [formattedLeave, ...prev];
-                }
-                });
-            
-              
-            }
-          
         });
-      return () => {
-          socket.off("newLeaveNotification");
-      };
-  }, []);
+      }
+    });
+    
+    return () => {
+      socket.off("newLeaveNotification");
+    };
+}, []);
 
   // Debounced API call for search suggestions
       useEffect(() => {
@@ -161,16 +164,16 @@ const AdminDashboard = () => {
         });
     };
 
-  const updateLeaveStatus = async (id, status) => {
-    try {
-      await api.patch(`/medical-leaves/${id}/status`, { status });
-      // Refresh the leave applications after updating
-      const response = await api.get("/medical-leaves");
-      setLeaveApplications(response.data);
-    } catch (error) {
-      console.error("Error updating leave status:", error);
-    }
-  };
+    const updateLeaveStatus = async (id, status) => {
+      try {
+        await api.patch(`/medical-leaves/${id}/status`, { status });
+        // Refresh the leave applications after updating
+        const response = await api.get("/medical-leaves");
+        setLeaveApplications(response.data);
+      } catch (error) {
+        console.error("Error updating leave status:", error);
+      }
+    };
   const [selectedLeave, setSelectedLeave] = useState(null);
 
   const viewLeaveDetails = async (id) => {
