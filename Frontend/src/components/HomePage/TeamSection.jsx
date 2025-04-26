@@ -3,27 +3,27 @@ import React from "react";
 const teamMembers = [
   {
     name: "Kanishka Pandey",
-    role: "UI/UX Designer",
-    experience: "Winner at Hackverse 5.0 NIT Surathkal | Third Winner in Quasar 2.0| Code Rush Finalist 2023{IIT Gwalior} |",
+    role: "UI/UX Designer/AI lead",
+    experience: "AI Enthusiast , Hackathon finalist ",
     image: "/./src/assets/Screenshot 2025-03-11 205754.png"
   },
   {
-    name: "Siya Pari",
+    name: "Aadi Gupta",
     role: "Backend Lead",
-    experience: "GNDU CSE'28 🎓 || Contributor @ GSSOC-Ext'24 || Tech enthusiast 👩‍💻",
-    image: "./src/assets/WhatsApp Image 2025-04-03 at 18.05.04_2535e614.jpg"
+    experience: "Backend Expert , Blockchain Enthusiast ",
+    image: "./src/assets/aadi.jpg"
   },
   {
-    name: "Mufaddal Ratlamwala",
+    name: "Vaibhav Mandloi",
     role: "Backend Lead",
-    experience: "Hackverse 5.0 NITK 🏆| Back-End Development | Full-Stack MERN Development | DSA | Contributor @GSSoC'24 | Core Team @GDSC",
-    image: "./src/assets/Screenshot 2025-03-11 205909.png"
+    experience: "Student || Exploring, Observing, Learning ||",
+    image: "./src/assets/Vaibhav.jpg"
   },
   {
-    name: "Athrav Shrotiya",
-    role: "AI lead ",
-    experience: "Electronics and Tech. Enthusiat || DSA || Python || Data Science || Machine Learning || Content Writer|| 4⭐⭐⭐⭐ Python HackerRank",
-    image: "./src/assets/image.png"
+    name: "Ayushi Vishwakarma ",
+    role: "Frontend Dev  ",
+    experience: "Pre-Final Year Student @ IETDAVV | MERN | Intern @ ITJOBXS | Ex-Nexus | 400+ LeetCode (Max 1574) | CodeChef 2★ | Aspiring Software Engineer",
+    image: "./src/assets/ayushi.png"
   },
 
 ];
