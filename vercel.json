@@ -1,13 +1,8 @@
 {
     "rewrites": [
-      { "source": "/api/:path*", "destination": "/api/:path*" }
+      { "source": "/api/:path*", "destination": "/Backend/api/:path*" }
     ],
-    "builds": [
-      { "src": "Frontend/package.json", "use": "@vercel/node" },
-      { "src": "Backend/app.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-      { "src": "/api/(.*)", "dest": "Backend/app.js" },
-      { "src": "/(.*)", "dest": "Frontend/$1" }
-    ]
+    "buildCommand": "cd Frontend && npm run build",
+    "outputDirectory": "Frontend/build",
+    "installCommand": "cd Frontend && npm install && cd ../Backend && npm install"
   }
