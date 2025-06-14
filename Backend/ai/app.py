@@ -37,7 +37,7 @@ if not JWT_SECRET:
 
 # Configure Gemini AI
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-pro")
+model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
 
 # Helper function to fetch user names by ID
 def get_user_name(user_id):
